@@ -1,0 +1,20 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+
+processors:
+  - add_docker_metadata: ~
+
+output.elasticsearch:
+  hosts: ["${ELASTICSEARCH_HOST}"]
+
+setup.dashboards:
+  enabled: true
+
+setup.kibana:
+  host: "${KIBANA_HOST}"
+
+monitoring:
+  enabled: true
+  elasticsearch:
