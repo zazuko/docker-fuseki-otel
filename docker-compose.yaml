@@ -9,6 +9,11 @@ services:
     networks:
       - application
 
+    labels:
+      co.elastic.logs/enabled: "true"
+      co.elastic.logs/module: "fuseki"
+      co.elastic.logs/fileset: log
+
     environment:
       OTEL_RESOURCE_ATTRIBUTES: service.name=fuseki-persons
       OTEL_TRACES_EXPORTER: otlp
@@ -19,7 +24,8 @@ services:
       - collector
 
     healthcheck:
-      test: ["CMD-SHELL", "wget -nv -t1 --spider localhost:3030/$$/ping || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -nv -t1 --spider localhost:3030/$$/ping || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -41,6 +47,11 @@ services:
     networks:
       - application
 
+    labels:
+      co.elastic.logs/enabled: "true"
+      co.elastic.logs/module: "fuseki"
+      co.elastic.logs/fileset: log
+
     environment:
       OTEL_RESOURCE_ATTRIBUTES: service.name=fuseki-relations
       OTEL_TRACES_EXPORTER: otlp
@@ -51,7 +62,8 @@ services:
       - collector
 
     healthcheck:
-      test: ["CMD-SHELL", "wget -nv -t1 --spider localhost:3030/$$/ping || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -nv -t1 --spider localhost:3030/$$/ping || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -64,7 +76,6 @@ services:
 
     logging:
       driver: json-file
-
 
   collector:
     image: otel/opentelemetry-collector:0.26.0
@@ -116,7 +127,11 @@ services:
       - collector
 
     healthcheck:
-      test: ["CMD-SHELL", "wget -nv -t1 --spider localhost:9090/-/healthy || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget -nv -t1 --spider localhost:9090/-/healthy || exit 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -146,7 +161,11 @@ services:
         hard: -1
 
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail localhost:9200/_cluster/health || exit 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -184,6 +203,7 @@ services:
 
     volumes:
       - ./config/filebeat.yaml:/usr/share/filebeat/filebeat.yml:ro
+      - ./filebeat-module:/usr/share/filebeat/module/fuseki:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
 
@@ -201,7 +221,11 @@ services:
         condition: service_healthy
 
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:5601/api/status || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail localhost:5601/api/status || exit 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5

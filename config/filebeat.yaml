@@ -10,7 +10,7 @@ output.elasticsearch:
   hosts: ["${ELASTICSEARCH_HOST}"]
 
 setup.dashboards:
-  enabled: true
+  enabled: false
 
 setup.kibana:
   host: "${KIBANA_HOST}"
