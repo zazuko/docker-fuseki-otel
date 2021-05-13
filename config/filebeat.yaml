@@ -15,6 +15,18 @@ setup.dashboards:
 setup.kibana:
   host: "${KIBANA_HOST}"
 
+setup.template:
+  enabled: true
+  type: index
+  settings:
+    index:
+      number_of_shards: 1
+      number_of_replicas: 0
+
+setup.ilm:
+  enabled: true
+  rollover_alias: "filebeat"
+
 monitoring:
   enabled: true
   elasticsearch:
