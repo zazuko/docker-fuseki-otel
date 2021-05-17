@@ -9,11 +9,6 @@ services:
     networks:
       - application
 
-    labels:
-      co.elastic.logs/enabled: "true"
-      co.elastic.logs/module: "fuseki"
-      co.elastic.logs/fileset: log
-
     environment:
       OTEL_RESOURCE_ATTRIBUTES: service.name=fuseki-persons
       OTEL_TRACES_EXPORTER: otlp
@@ -36,6 +31,11 @@ services:
     ports:
       - "3030:3030"
 
+    labels:
+      co.elastic.logs/enabled: "true"
+      co.elastic.logs/module: "fuseki"
+      co.elastic.logs/fileset: log
+
     logging:
       driver: json-file
 
@@ -46,11 +46,6 @@ services:
 
     networks:
       - application
-
-    labels:
-      co.elastic.logs/enabled: "true"
-      co.elastic.logs/module: "fuseki"
-      co.elastic.logs/fileset: log
 
     environment:
       OTEL_RESOURCE_ATTRIBUTES: service.name=fuseki-relations
@@ -74,6 +69,11 @@ services:
     ports:
       - "3031:3030"
 
+    labels:
+      co.elastic.logs/enabled: "true"
+      co.elastic.logs/module: "fuseki"
+      co.elastic.logs/fileset: log
+
     logging:
       driver: json-file
 
@@ -93,8 +93,11 @@ services:
     volumes:
       - "./config/collector.yaml:/collector.yaml:ro"
 
-    logging:
-      driver: json-file
+    labels:
+      co.elastic.logs/enabled: "false"
+
+    #logging:
+    #  driver: json-file
 
   jaeger:
     image: jaegertracing/all-in-one:1.22
@@ -111,8 +114,11 @@ services:
     ports:
       - "16686:16686"
 
-    logging:
-      driver: json-file
+    labels:
+      co.elastic.logs/enabled: "false"
+
+    #logging:
+    #  driver: json-file
 
   prometheus:
     image: prom/prometheus:v2.26.0
@@ -142,8 +148,11 @@ services:
     ports:
       - "9090:9090"
 
-    logging:
-      driver: json-file
+    labels:
+      co.elastic.logs/enabled: "false"
+
+    #logging:
+    #  driver: json-file
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
@@ -170,18 +179,18 @@ services:
       timeout: 5s
       retries: 5
 
-    labels:
-      co.elastic.logs/enabled: "true"
-      co.elastic.logs/module: "elasticsearch"
-
     ports:
       - "9200:9200"
 
     networks:
       - elastic
 
-    logging:
-      driver: json-file
+    labels:
+      co.elastic.logs/enabled: "false"
+      co.elastic.logs/module: "elasticsearch"
+
+    #logging:
+    #  driver: json-file
 
   filebeat:
     image: docker.elastic.co/beats/filebeat:7.12.1
@@ -210,8 +219,11 @@ services:
     networks:
       - elastic
 
-    logging:
-      driver: json-file
+    labels:
+      co.elastic.logs/enabled: "false"
+
+    #logging:
+    #  driver: json-file
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.12.1
@@ -231,8 +243,11 @@ services:
       retries: 5
 
     labels:
-      co.elastic.logs/enabled: "true"
+      co.elastic.logs/enabled: "false"
       co.elastic.logs/module: "kibana"
+
+    #logging:
+    #  driver: json-file
 
     networks:
       - elastic
@@ -242,9 +257,6 @@ services:
 
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
-
-    logging:
-      driver: json-file
 
   grafana:
     image: grafana/grafana:7.5.6
@@ -259,8 +271,14 @@ services:
       - monitoring
       - elastic
 
-    logging:
-      driver: json-file
+    volumes:
+      - ./config/grafana:/etc/grafana/provisioning:ro
+
+    labels:
+      co.elastic.logs/enabled: "false"
+
+    #logging:
+    #  driver: json-file
 
 networks:
   monitoring:
