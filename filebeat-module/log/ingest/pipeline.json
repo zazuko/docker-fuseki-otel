@@ -73,6 +73,12 @@
                 "field": "fuseki.context_json",
                 "ignore_missing": true
             }
+        },
+        {
+            "remove": {
+                "field": "fuseki",
+                "ignore_missing": true
+            }
         }
     ],
     "on_failure": [
