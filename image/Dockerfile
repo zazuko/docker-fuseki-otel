@@ -27,16 +27,16 @@ RUN apk add --no-cache curl binutils
 WORKDIR $FUSEKI_HOME
 
 # Get the webapp folder and the jar from the full zip
-RUN wget "$ZIP_URL" && \
-    unzip ${ARTIFACT}.zip && \
-    mv ${ARTIFACT}/webapp ${ARTIFACT}/${FUSEKI_JAR} ./ && \
-    rm -r ${ARTIFACT}/ ${ARTIFACT}.zip
+RUN wget "${ZIP_URL}" && \
+    unzip "${ARTIFACT}.zip" && \
+    mv "${ARTIFACT}/webapp" "${ARTIFACT}/${FUSEKI_JAR}" ./ && \
+    rm -r "${ARTIFACT}/" "${ARTIFACT}.zip"
 
 RUN wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_VERSION}/${OTEL_JAR}
 
 ARG JDEPS_EXTRA="jdk.crypto.cryptoki,jdk.crypto.ec"
 RUN \
-    JDEPS="$(jdeps --multi-release base --print-module-deps --ignore-missing-deps ${FUSEKI_JAR} ${OTEL_JAR})"  && \
+    JDEPS="$(jdeps --multi-release base --print-module-deps --ignore-missing-deps "${FUSEKI_JAR}" "${OTEL_JAR}")"  && \
     jlink \
     --compress 2 --strip-debug --no-header-files --no-man-pages \
     --output "${JAVA_MINIMAL}" \
@@ -63,14 +63,14 @@ RUN adduser -H -D -u 1000 fuseki fuseki
 
 ADD entrypoint.sh log4j2.properties ${FUSEKI_HOME}/
 
-RUN mkdir -p ${FUSEKI_BASE}/databases && \
-    chown -R fuseki $FUSEKI_BASE
+RUN mkdir -p "${FUSEKI_BASE}/databases" && \
+    chown -R fuseki "${FUSEKI_BASE}"
 
 # Default environment variables
 ENV \
-    JAVA_HOME=${JAVA_MINIMAL}           \
+    JAVA_HOME="${JAVA_MINIMAL}"         \
     JAVA_OPTIONS="-Xmx2048m -Xms2048m"  \
-    JENA_VERSION=${JENA_VERSION}        \
+    JENA_VERSION="${JENA_VERSION}"      \
     FUSEKI_HOME="${FUSEKI_HOME}"        \
     FUSEKI_BASE="${FUSEKI_BASE}"        \
     FUSEKI_JAR="${FUSEKI_JAR}"          \
