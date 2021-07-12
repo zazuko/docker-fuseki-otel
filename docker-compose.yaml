@@ -2,6 +2,7 @@ version: "3.2"
 
 services:
   fuseki-persons:
+    image: docker.io/zazuko/jena-fuseki:4.1.0
     build: ./image/
     command: >-
       --file /data/persons.nt /ds
@@ -40,6 +41,7 @@ services:
       driver: json-file
 
   fuseki-relations:
+    image: docker.io/zazuko/jena-fuseki:4.1.0
     build: ./image/
     command: >-
       --file /data/relations.nt /ds
