@@ -16,5 +16,7 @@ admin = ${ADMIN_PASSWORD}
 /$/ping    = anon
 /$/metrics = anon
 
+# Query endpoints are publicly accesible
+/*/query   = anon
 # Everything else is under auth
 /**        = authcBasic,user[admin]
