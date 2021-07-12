@@ -276,6 +276,13 @@ services:
     volumes:
       - ./config/grafana:/etc/grafana/provisioning:ro
 
+    healthcheck:
+      test:
+        ["CMD-SHELL", "wget -nv -t1 --spider localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
     labels:
       co.elastic.logs/enabled: "false"
 
