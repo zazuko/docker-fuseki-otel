@@ -61,7 +61,9 @@ COPY --from=base ${FUSEKI_HOME} ${FUSEKI_HOME}
 # -u : explicit UID
 RUN adduser -H -D -u 1000 fuseki fuseki
 
-ADD entrypoint.sh log4j2.properties ${FUSEKI_HOME}/
+RUN apk add --no-cache gettext
+
+ADD shiro.ini.tmpl entrypoint.sh log4j2.properties ${FUSEKI_HOME}/
 
 RUN mkdir -p "${FUSEKI_BASE}/databases" && \
     chown -R fuseki "${FUSEKI_BASE}"

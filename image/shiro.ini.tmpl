@@ -1,0 +1,20 @@
+[main]
+ssl.enabled = false 
+
+plainMatcher = org.apache.shiro.authc.credential.SimpleCredentialsMatcher
+iniRealm.credentialsMatcher = $plainMatcher
+
+[users]
+admin = ${ADMIN_PASSWORD}
+
+[roles]
+
+[urls]
+# Control functions open to anyone
+/$/status  = anon
+/$/server  = anon
+/$/ping    = anon
+/$/metrics = anon
+
+# Everything else is under auth
+/**        = authcBasic,user[admin]
