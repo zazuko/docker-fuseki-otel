@@ -34,7 +34,8 @@ RUN wget "${ZIP_URL}" && \
 
 RUN wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_VERSION}/${OTEL_JAR}
 
-ARG JDEPS_EXTRA="jdk.crypto.cryptoki,jdk.crypto.ec"
+# jdk.httpserver is needed by the OTEL prometheus exporter
+ARG JDEPS_EXTRA="jdk.crypto.cryptoki,jdk.crypto.ec,jdk.httpserver"
 RUN \
     JDEPS="$(jdeps --multi-release base --print-module-deps --ignore-missing-deps "${FUSEKI_JAR}" "${OTEL_JAR}")"  && \
     jlink \
