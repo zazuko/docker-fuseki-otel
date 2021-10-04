@@ -1,0 +1,17 @@
+embed-server --std-out=echo --server-config=standalone.xml
+
+cd /subsystem=undertow/server=default-server
+
+# Enable HTTP2
+./http-listener=default:write-attribute(name=enable-http2, value=true)
+
+# Mount Fuseki on /
+./host=default-host:write-attribute(name=default-web-module, value=fuseki.war)
+
+# Remove the default "welcome-content"
+./host=default-host/location=\/:remove()
+
+# Remove the HTTPS listener
+./https-listener=https:remove()
+
+stop-embedded-server

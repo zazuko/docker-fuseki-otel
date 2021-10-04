@@ -1,0 +1,68 @@
+ARG JENA_VERSION=4.1.0
+ARG OTEL_VERSION=1.3.1
+ARG WILDFLY_VERSION=24.0.0.Final
+
+ARG FUSEKI_BASE=/fuseki
+ARG FUSEKI_WAR=fuseki.war
+ARG OTEL_JAR=opentelemetry-javaagent-all.jar
+ARG FUSEKI_HOME=/opt/fuseki
+ARG OTEL_HOME=/opt/opentelemetry
+ARG WILDFLY_HOME=/opt/jboss/wildfly
+
+FROM jboss/wildfly:${WILDFLY_VERSION}
+
+ARG JENA_VERSION
+ARG FUSEKI_WAR
+ARG FUSEKI_BASE
+ARG FUSEKI_HOME
+ARG WILDFLY_HOME
+ARG OTEL_VERSION
+ARG OTEL_JAR
+ARG OTEL_HOME
+ARG REPO=https://repo1.maven.org/maven2
+ARG ARTIFACT=apache-jena-fuseki-${JENA_VERSION}
+ARG ZIP_URL=${REPO}/org/apache/jena/apache-jena-fuseki/${JENA_VERSION}/${ARTIFACT}.zip
+
+USER root:root
+
+# Get the webapp folder and the jar from the full zip
+RUN curl "${ZIP_URL}" -o "${ARTIFACT}.zip" && \
+    unzip "${ARTIFACT}.zip" && \
+    mv "${ARTIFACT}/${FUSEKI_WAR}" "${WILDFLY_HOME}/standalone/deployments/" && \
+    rm -r "${ARTIFACT}/" "${ARTIFACT}.zip"
+
+RUN mkdir -p /opt/opentelemetry && \
+    curl -sL "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_VERSION}/${OTEL_JAR}" -o "${OTEL_HOME}/${OTEL_JAR}"
+
+RUN \
+    yum install -y gettext && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+
+ADD shiro.ini.tmpl entrypoint.sh setup.cli ${FUSEKI_HOME}/
+
+RUN mkdir -p "${FUSEKI_BASE}/databases" && \
+    chown -R jboss "${FUSEKI_BASE}"
+WORKDIR ${FUSEKI_BASE}
+ENV FUSEKI_BASE=${FUSEKI_BASE}
+
+# Run as "jboss" (explicit UID so "run as non-root" policies can be enforced)
+USER 1000:root
+
+# Configure the server
+RUN \
+    "${JBOSS_HOME}/bin/jboss-cli.sh" --file="${FUSEKI_HOME}/setup.cli" && \
+    "${JBOSS_HOME}/bin/add-user.sh" admin admin --silent && \
+    rm -rf "${JBOSS_HOME}/standalone/configuration/standalone_xml_history"
+
+
+# Default environment variables
+ENV \
+    FUSEKI_BASE="${FUSEKI_BASE}" \
+    FUSEKI_HOME="${FUSEKI_HOME}" \
+    OTEL_HOME="${OTEL_HOME}" \
+    OTEL_JAR="${OTEL_JAR}" \
+    JAVA_OPTS="-Xmx2048m -Xms2048m"
+
+ENTRYPOINT [ "/opt/fuseki/entrypoint.sh" ]
+CMD [ "/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0" ]
