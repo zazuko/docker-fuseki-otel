@@ -2,7 +2,7 @@ version: "3.2"
 
 services:
   fuseki-persons:
-    image: docker.io/zazuko/jena-fuseki:4.1.0-wildfly
+    image: docker.io/zazuko/jena-fuseki:4.2.0-wildfly
     build:
       context: ./image/
       dockerfile: Dockerfile.wildfly
@@ -42,7 +42,7 @@ services:
       driver: json-file
 
   fuseki-relations:
-    image: docker.io/zazuko/jena-fuseki:4.1.0
+    image: docker.io/zazuko/jena-fuseki:4.2.0
     build: ./image/
     command: >-
       --file /data/relations.nt /ds
