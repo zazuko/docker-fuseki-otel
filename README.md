@@ -1,5 +1,9 @@
 # OpenTelemetry-enabled Fuseki
 
+> ### **⚠ DEPRECATION NOTICE**
+>
+> This repository is deprecated in favor of https://github.com/zazuko/fuseki-geosparql.
+
 This builds a Docker image that runs Fuseki with the OpenTelemetry Java agent setup.
 To test that image, this repository includes a docker-compose stack with:
 
